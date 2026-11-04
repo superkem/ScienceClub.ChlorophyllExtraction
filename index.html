@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Science Club Chlorophyll Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400..700&display=swap">
+<style>
+/* Layout: a bench sheet. A sticky 40-minute track (segments drawn to scale, 10:8:15:7) sits over one column of numbered stations. Each station is a short brief, an animated technique, then what the team records.
+   Colour carries meaning: green = chlorophyll, red / blue = the light colours tested, amber = "not yet" feedback. */
+:root{
+  --bg:#EEF2EE; --surface:#FFFFFF; --surface-2:#F2F6F2; --ink:#132A1C; --ink-2:#43584A; --ink-3:#5C7062;
+  --line:#CCDACF; --line-2:#E1EBE3;
+  --leaf:#2E7D32; --leaf-soft:#E3F2E5; --leaf-ink:#1B5E20;
+  --red:#C23A30; --red-soft:#FBE9E6; --blue:#2552C0; --blue-soft:#E5ECFB;
+  --ok:#17794B; --ok-soft:#DDF3E6; --warn:#8F5400; --warn-soft:#FCEFD3;
+  --glass:#8DA39A; --eth:#B9DDF0; --pow:#F8F9FB;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0D1710; --surface:#142119; --surface-2:#1A2B20; --ink:#E8F2EA; --ink-2:#B4C6B8; --ink-3:#8FA596;
+    --line:#2C4333; --line-2:#22362A;
+    --leaf:#6FD27A; --leaf-soft:#173323; --leaf-ink:#A8E8AE;
+    --red:#FF8277; --red-soft:#3A1F27; --blue:#84A9FF; --blue-soft:#1B2A55;
+    --ok:#53D493; --ok-soft:#13362A; --warn:#F3B24F; --warn-soft:#3A2D12;
+    --glass:#5E7A6B; --eth:#4F7D95; --pow:#E6EBF5;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);-webkit-text-size-adjust:100%}
+h1,h2,h3,h4,p,ol,ul,figure{margin:0}
+h1,h2,h3,h4{font-family:var(--f-display);text-wrap:balance}
+sub{font-size:.72em;line-height:0}
+b{font-weight:650}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.skip{position:absolute;left:-999px;top:0;background:var(--ink);color:var(--surface);padding:8px 12px;z-index:70}
+.skip:focus{left:8px;top:8px}
+
+/* buttons, chips, fields */
+.btn{font:600 14px/1.1 var(--f-body);padding:10px 14px;border-radius:8px;border:1.5px solid var(--ink-3);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;gap:6px;align-items:center;justify-content:center}
+.btn:hover:not(:disabled){border-color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.ghost{border-color:var(--line)}
+.btn.small{padding:7px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{display:inline-flex;gap:6px;align-items:center;padding:3px 10px;border-radius:99px;font:500 12.5px/1.3 var(--f-mono);background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+.chip.leaf{background:var(--leaf-soft);color:var(--leaf-ink);border-color:transparent}
+.chip.red{background:var(--red-soft);color:var(--red);border-color:transparent}
+.chip.blue{background:var(--blue-soft);color:var(--blue);border-color:transparent}
+.chip.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+select,.txt{font:500 14.5px var(--f-body);color:var(--ink);background:var(--surface);border:1.5px solid var(--ink-3);border-radius:8px;padding:8px 9px;max-width:100%}
+.txt{width:100%}
+textarea.txt{font:400 15px/1.5 var(--f-body);min-height:92px;resize:vertical}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar-in{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;padding-block:8px}
+.brand{font:800 15px/1 var(--f-display);font-stretch:120%;letter-spacing:.03em;white-space:nowrap;text-transform:uppercase}
+.trackwrap{position:relative;padding-bottom:6px}
+.track{display:flex;gap:4px}
+.seg{flex:var(--w) 1 0;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:7px;padding:5px 8px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line-2);color:var(--ink-2);text-decoration:none;font-size:12px;line-height:1.2;overflow:hidden}
+.seg b{grid-row:1/3;align-self:center;font:600 16px/1 var(--f-mono)}
+.seg span{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg i{font:500 11px/1.2 var(--f-mono);font-style:normal;color:var(--ink-3)}
+.seg.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.seg.on i{color:inherit;opacity:.8}
+.seg.now{box-shadow:inset 0 -3px 0 var(--leaf)}
+.prog{position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--line-2);border-radius:4px;overflow:hidden}
+.prog>div{height:100%;width:0;background:var(--leaf)}
+.clock{display:flex;align-items:center;gap:6px}
+.clock output{font:600 18px/1 var(--f-mono);min-width:5ch;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:720px){
+  .bar-in{grid-template-columns:minmax(0,1fr) auto;gap:10px}
+  .brand{display:none}
+  .seg{grid-template-columns:minmax(0,1fr);padding:6px 3px;text-align:center}
+  .seg span,.seg i{display:none}
+  .seg b{grid-row:auto}
+  .clock{gap:4px}
+  .clock output{font-size:16px}
+  .clock .btn{padding:7px 8px}
+}
+
+/* hero */
+.hero-in{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:32px;align-items:center;padding-block:44px 18px}
+.eyebrow{font:500 13px/1.3 var(--f-mono);text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);margin-bottom:14px}
+.hero h1{font:800 clamp(32px,6vw,60px)/1.04 var(--f-display);font-stretch:122%;letter-spacing:-.01em}
+.t-leaf{color:var(--leaf)}
+.lede{margin-top:18px;max-width:58ch;font-size:18px;color:var(--ink-2)}
+.team{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.team label{font:600 13px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.team .txt{width:min(100%,280px)}
+.hero-art{width:100%;max-width:300px;justify-self:center;height:auto}
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding-block:14px 0;list-style:none;margin:0;padding-left:0}
+.how li{padding:14px 16px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:14.5px;color:var(--ink-2)}
+.how b{display:block;font:700 15px var(--f-display);font-stretch:108%;color:var(--ink);margin-bottom:2px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-block:14px 0}
+.hint{font-size:13.5px;color:var(--ink-3)}
+@media (max-width:820px){.hero-in{grid-template-columns:minmax(0,1fr)}.hero-art{max-width:220px;justify-self:start}.how{grid-template-columns:minmax(0,1fr)}}
+
+/* safety and kit */
+.sect{padding-block:40px 0}
+.sect h2{font:800 clamp(22px,3.4vw,30px)/1.1 var(--f-display);font-stretch:112%;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.sect .lead{margin-top:6px;color:var(--ink-2);max-width:68ch}
+.safe-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.safe{display:grid;grid-template-columns:auto 34px minmax(0,1fr);gap:12px;align-items:center;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer}
+.safe:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
+.safe input,.kit input{width:20px;height:20px;accent-color:var(--ok)}
+.safe svg{width:34px;height:34px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.safe span{font-size:15px}
+@media (max-width:720px){.safe-grid{grid-template-columns:minmax(0,1fr)}}
+.kit-wrap{margin-top:16px;overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.kit{border-collapse:collapse;width:100%;font-size:15px}
+.kit th,.kit td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line-2)}
+.kit tr:last-child td,.kit tr:last-child th{border-bottom:0}
+.kit thead th{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.kit td.amt{font-family:var(--f-mono)}
+
+/* stations */
+.station{padding-block:52px 0;scroll-margin-top:86px}
+.st-head{display:flex;align-items:flex-end;gap:18px;padding-bottom:14px;border-bottom:2px solid var(--ink)}
+.st-num{font:800 clamp(56px,10vw,96px)/.8 var(--f-display);font-stretch:125%}
+.st-time{font:500 13px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:8px}
+.st-head h2{font:800 clamp(26px,4.4vw,40px)/1.05 var(--f-display);font-stretch:112%}
+.st-goal{margin-top:14px;max-width:70ch;color:var(--ink-2);font-size:17px}
+.datacard{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.dc-t{font:600 12px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-right:4px}
+.block{margin-top:36px;display:grid;gap:16px}
+.sub{font:700 21px/1.2 var(--f-display);font-stretch:108%;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tag{font:600 12px/1 var(--f-mono);background:var(--ink);color:var(--surface);padding:5px 7px;border-radius:4px;letter-spacing:.04em}
+.sub-note{color:var(--ink-2);max-width:72ch}
+.callout{padding:12px 14px;border-radius:10px;background:var(--warn-soft);color:var(--ink);max-width:76ch;font-size:15px;margin-top:14px}
+.callout b{color:var(--warn)}
+
+/* steppers and stage */
+.stepper{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:22px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.steps{list-style:none;padding:0;display:grid;gap:6px}
+.step button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start;padding:10px 12px;border-radius:10px;border:1.5px solid transparent;cursor:pointer}
+.step button:hover{background:var(--surface-2)}
+.step button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.step.on button{background:var(--surface-2);border-color:var(--ink)}
+.step-n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 14px var(--f-mono);border:2px solid var(--line);color:var(--ink-2)}
+.step.on .step-n{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.step-t b{display:block;font-weight:650;line-height:1.35}
+.step-t small{display:block;margin-top:3px;font-size:14px;line-height:1.45;color:var(--ink-2)}
+.stage-col{display:grid;gap:10px;position:sticky;top:100px}
+.stage{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto}
+.cap{font:500 13.5px/1.45 var(--f-mono);color:var(--ink-2);min-height:2.9em}
+.st-ctl{display:flex;flex-wrap:wrap;gap:8px}
+@media (max-width:820px){.stepper{grid-template-columns:minmax(0,1fr)}.stage-col{position:static;order:-1}}
+.s-glass{fill:none;stroke:var(--glass);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.s-lbl{font:500 13px var(--f-mono);fill:var(--ink-3)}
+.s-lbl.b{font-weight:600;fill:var(--ink)}
+.s-body{fill:var(--surface);stroke:var(--line);stroke-width:2}
+.s-rod{stroke:#8d6e63;stroke-linecap:round}
+.s-tag{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.s-tag-t{font:600 12px var(--f-mono);fill:var(--ink);text-anchor:middle}
+
+/* tables and forms */
+.scroll-x{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.tbl{border-collapse:collapse;width:100%;font-size:14.5px}
+.tbl th,.tbl td{border-bottom:1px solid var(--line-2);padding:9px 10px;text-align:left;vertical-align:middle}
+.tbl tr:last-child td,.tbl tr:last-child th{border-bottom:0}
+.tbl thead th{font:600 11.5px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);border-bottom:2px solid var(--ink);white-space:nowrap}
+.tbl td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.tbl input.in{font:500 16px var(--f-mono);width:9ch;color:var(--ink);background:var(--surface);border:1.5px solid var(--ink-3);border-radius:6px;padding:6px 8px}
+.tbl .out{font:600 15px var(--f-mono);color:var(--leaf-ink)}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.25);vertical-align:-2px;margin-right:8px}
+.fb{padding:9px 11px;border-radius:8px;font-size:15px}
+.fb:empty{display:none}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}
+.fb.warn{background:var(--warn-soft);color:var(--warn)}
+.pred-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.pred-row label{font-weight:650}
+.reasons{display:grid;gap:8px}
+.reason{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:10px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-size:15px}
+.reason input{width:19px;height:19px;margin-top:2px;accent-color:var(--leaf)}
+.reason small{display:block;margin-top:4px;font-size:13.5px}
+.reason small:empty{display:none}
+.reason.right{border-color:var(--ok);background:var(--ok-soft)}
+.reason.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.sim-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.summary{width:100%;min-height:280px;font:13.5px/1.55 var(--f-mono);color:var(--ink);background:var(--surface);border:1.5px solid var(--ink-3);border-radius:10px;padding:14px;resize:vertical}
+.foot{padding-block:56px 72px}
+.foot p{color:var(--ink-3);font-size:13.5px;max-width:70ch}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:80;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media print{.bar,.toast,.st-ctl{display:none}.stage-col{position:static}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the protocol</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <div class="brand">Science Club</div>
+    <div class="trackwrap">
+      <nav class="track" aria-label="The 40-minute plan, drawn to scale">
+        <a class="seg" style="--w:10" href="#act1" title="Activity 1, 0 to 10 minutes"><b>1</b><span>Grind</span><i>0–10′</i></a>
+        <a class="seg" style="--w:8" href="#act2" title="Activity 2, 10 to 18 minutes"><b>2</b><span>Filter</span><i>10–18′</i></a>
+        <a class="seg" style="--w:15" href="#act3" title="Activity 3, 18 to 33 minutes"><b>3</b><span>Light test</span><i>18–33′</i></a>
+        <a class="seg" style="--w:7" href="#act4" title="Activity 4, 33 to 40 minutes"><b>4</b><span>Analyze</span><i>33–40′</i></a>
+      </nav>
+      <div class="prog" aria-hidden="true"><div id="prog"></div></div>
+    </div>
+    <div class="clock">
+      <output id="clk" aria-label="Elapsed time">00:00</output>
+      <button class="btn small primary" id="clkBtn" type="button" disabled title="Tick all four safety boxes to start the clock">Start</button>
+      <button class="btn small ghost" id="clkReset" type="button" aria-label="Reset the clock">Reset</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero">
+  <div class="wrap hero-in">
+    <div>
+      <p class="eyebrow">Science Club · 40-minute bench protocol</p>
+      <h1>Extract <span class="t-leaf">chlorophyll</span> and test how it absorbs light</h1>
+      <p class="lede">Grind spinach in ethanol, filter out a green extract, then shine red, green and blue light through it. Your team measures which colours get through and explains why leaves look green.</p>
+      <div class="team">
+        <label for="team">Team name</label>
+        <input class="txt" id="team" type="text" autocomplete="off" placeholder="Type your team name">
+      </div>
+    </div>
+    <svg class="hero-art" viewBox="0 0 280 260" role="img" aria-label="Red and blue light stopped by a green extract tube while green light passes through">
+      <rect x="104" y="40" width="72" height="170" rx="14" fill="#43a047" opacity=".8" stroke="#2e7d32" stroke-width="3"/>
+      <rect x="10" y="68" width="94" height="22" fill="#e53935" opacity=".9"/>
+      <rect x="10" y="118" width="94" height="22" fill="#43a047" opacity=".9"/>
+      <rect x="10" y="168" width="94" height="22" fill="#1e88e5" opacity=".9"/>
+      <rect x="176" y="118" width="94" height="22" fill="#43a047" opacity=".9"/>
+      <rect x="176" y="68" width="94" height="22" fill="#e53935" opacity=".1"/>
+      <rect x="176" y="168" width="94" height="22" fill="#1e88e5" opacity=".1"/>
+      <text class="s-lbl" x="140" y="240" text-anchor="middle">only green gets through</text>
+    </svg>
+  </div>
+  <div class="wrap">
+    <ul class="how">
+      <li><b>Watch</b>Each technique has an animation. Step through it, replay it or play all steps.</li>
+      <li><b>Do</b>Repeat the steps at the bench with your own materials.</li>
+      <li><b>Record</b>Type your lux readings. The page calculates the percentages and builds your team summary.</li>
+    </ul>
+    <div class="legend" role="note" aria-label="Colour key">
+      <span class="chip leaf">green = chlorophyll</span><span class="chip red">red light</span><span class="chip">green light</span><span class="chip blue">blue light</span>
+      <span class="hint">Colours in the drawings are added to help you see the liquids.</span>
+    </div>
+  </div>
+</section>
+
+<section class="wrap sect" id="safety" aria-labelledby="safety-h">
+  <h2 id="safety-h">Safety first <span class="chip" id="safeStatus">0 / 4 confirmed</span></h2>
+  <p class="lead">Tick all four boxes as a team. The clock unlocks when you have.</p>
+  <div class="safe-grid">
+    <label class="safe"><input type="checkbox" class="safe-cb">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="12" width="12" height="10" rx="4"/><rect x="19" y="12" width="12" height="10" rx="4"/><path d="M15 17h4M3 17H1M31 17h2"/></svg>
+      <span><b>Wear goggles and gloves</b> before any liquid is poured.</span></label>
+    <label class="safe"><input type="checkbox" class="safe-cb">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M17 3c2 6 9 9 9 17a9 9 0 0 1-18 0c0-4 3-6 4-9 2 2 3 3 3 5 1-3 2-7 2-13z"/></svg>
+      <span><b>Ethanol is flammable.</b> No flames, hot plates or heaters. Keep the bottle capped.</span></label>
+    <label class="safe"><input type="checkbox" class="safe-cb">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="13"/><path d="M8 26L26 8"/></svg>
+      <span><b>Taste nothing.</b> Every tube is labelled “not for consumption”.</span></label>
+    <label class="safe"><input type="checkbox" class="safe-cb">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M17 4c5 7 9 11 9 16a9 9 0 0 1-18 0c0-5 4-9 9-16z"/></svg>
+      <span><b>Wipe up spills</b> straight away and keep the room ventilated.</span></label>
+  </div>
+</section>
+
+<section class="wrap sect" id="kit" aria-labelledby="kit-h">
+  <h2 id="kit-h">Team kit <span class="chip" id="kitStatus">0 / 5 collected</span></h2>
+  <p class="lead">Quantities are per team of 3–4 students.</p>
+  <div class="kit-wrap">
+    <table class="kit">
+      <thead><tr><th scope="col">Got it</th><th scope="col">Material</th><th scope="col">Amount per team</th></tr></thead>
+      <tbody>
+        <tr><td><input type="checkbox" class="kit-cb" aria-label="Spinach collected"></td><th scope="row">Fresh spinach</th><td class="amt">5–6 leaves (about 2 g)</td></tr>
+        <tr><td><input type="checkbox" class="kit-cb" aria-label="Ethanol collected"></td><th scope="row">Ethanol, 90–96%</th><td class="amt">15 mL (10 mL grind, 5 mL blank)</td></tr>
+        <tr><td><input type="checkbox" class="kit-cb" aria-label="Mortar collected"></td><th scope="row">Mortar, pestle and sand</th><td class="amt">1 set, a pinch of sand</td></tr>
+        <tr><td><input type="checkbox" class="kit-cb" aria-label="Filter kit collected"></td><th scope="row">Funnel, coffee filter, cup</th><td class="amt">1 each, plus 2 clear tubes and a marker</td></tr>
+        <tr><td><input type="checkbox" class="kit-cb" aria-label="Light kit collected"></td><th scope="row">Red, green and blue light, phone with lux-meter app</th><td class="amt">LED torches or cellophane over a white torch</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ ACTIVITY 1 ============ -->
+<section class="station" id="act1" aria-labelledby="act1-h">
+  <div class="wrap">
+    <header class="st-head">
+      <span class="st-num" aria-hidden="true">1</span>
+      <div><p class="st-time">0–10 min · Activity 1</p><h2 id="act1-h">Prepare and grind</h2></div>
+    </header>
+    <p class="st-goal">Pull chlorophyll out of the leaf cells and into ethanol. Predict first, then grind.</p>
+    <div class="datacard" role="note"><span class="dc-t">Data card</span>
+      <span class="chip">2 g spinach</span><span class="chip">10 mL ethanol</span><span class="chip">grind 3–4 min</span></div>
+    <p class="callout"><b>Goggles on, no flames.</b> Keep the ethanol bottle capped except when pouring.</p>
+
+    <div class="block">
+      <h3 class="sub"><span class="tag">1A</span>Predict</h3>
+      <div class="pred-row">
+        <label for="pred">Through the green extract, which colour of light do you think will reach the sensor best?</label>
+        <select id="pred"><option value="">choose…</option><option>Red</option><option>Green</option><option>Blue</option></select>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3 class="sub"><span class="tag">1B</span>Grind the leaves</h3>
+      <div class="stepper" id="stepA">
+        <ol class="steps"></ol>
+        <div class="stage-col">
+          <figure class="stage"><svg id="svgA" viewBox="0 0 520 320" role="img" aria-label="Animated drawing: spinach pieces go into a mortar, ethanol is poured on, and the pestle grinds until the liquid is deep green"></svg></figure>
+          <p class="cap" aria-live="polite"></p>
+          <div class="st-ctl"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTIVITY 2 ============ -->
+<section class="station" id="act2" aria-labelledby="act2-h">
+  <div class="wrap">
+    <header class="st-head">
+      <span class="st-num" aria-hidden="true">2</span>
+      <div><p class="st-time">10–18 min · Activity 2</p><h2 id="act2-h">Filter the extract</h2></div>
+    </header>
+    <p class="st-goal">Remove leaf bits to get a clear green extract. While it drips, prepare the blank tube you will compare it with.</p>
+    <div class="block">
+      <h3 class="sub"><span class="tag">2A</span>Filter and fill the tubes</h3>
+      <div class="stepper" id="stepB">
+        <ol class="steps"></ol>
+        <div class="stage-col">
+          <figure class="stage"><svg id="svgB" viewBox="0 0 520 320" role="img" aria-label="Animated drawing: a filter is folded into a funnel, green liquid is poured in and drips into a cup, then 5 millilitres goes into a tube labelled extract next to a blank tube of plain ethanol"></svg></figure>
+          <p class="cap" aria-live="polite"></p>
+          <div class="st-ctl"></div>
+        </div>
+      </div>
+      <p class="sub-note"><b>Why a blank?</b> Plain ethanol shows how much light the liquid and glass let through on their own. Comparing with it tells you what the chlorophyll alone absorbs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTIVITY 3 ============ -->
+<section class="station" id="act3" aria-labelledby="act3-h">
+  <div class="wrap">
+    <header class="st-head">
+      <span class="st-num" aria-hidden="true">3</span>
+      <div><p class="st-time">18–33 min · Activity 3</p><h2 id="act3-h">Light absorbance test</h2></div>
+    </header>
+    <p class="st-goal">Measure how much red, green and blue light passes through the blank and through the extract. Keep the distance the same every time.</p>
+    <div class="block">
+      <h3 class="sub"><span class="tag">3A</span>Measure the light</h3>
+      <div class="stepper" id="stepC">
+        <ol class="steps"></ol>
+        <div class="stage-col">
+          <figure class="stage"><svg id="svgC" viewBox="0 0 520 320" role="img" aria-label="Animated drawing: a coloured torch shines through a tube onto a phone sensor. Through the blank all colours pass; through the green extract red and blue are mostly absorbed and green passes"></svg></figure>
+          <p class="cap" aria-live="polite"></p>
+          <div class="st-ctl"></div>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <h3 class="sub"><span class="tag">3B</span>Record your readings</h3>
+      <p class="sub-note">Type the lux readings from your phone. % transmitted = extract ÷ blank × 100.</p>
+      <div class="scroll-x"><table class="tbl" id="results">
+        <thead><tr><th scope="col">Light</th><th scope="col">Blank (lux)</th><th scope="col">Extract (lux)</th><th scope="col">% transmitted</th><th scope="col">% absorbed</th></tr></thead>
+        <tbody>
+          <tr data-c="Red"><th scope="row"><span class="sw" style="background:#e53935"></span>Red</th><td><input class="in b" type="text" inputmode="decimal" autocomplete="off" aria-label="Red blank lux"></td><td><input class="in e" type="text" inputmode="decimal" autocomplete="off" aria-label="Red extract lux"></td><td class="out t">–</td><td class="out a">–</td></tr>
+          <tr data-c="Green"><th scope="row"><span class="sw" style="background:#43a047"></span>Green</th><td><input class="in b" type="text" inputmode="decimal" autocomplete="off" aria-label="Green blank lux"></td><td><input class="in e" type="text" inputmode="decimal" autocomplete="off" aria-label="Green extract lux"></td><td class="out t">–</td><td class="out a">–</td></tr>
+          <tr data-c="Blue"><th scope="row"><span class="sw" style="background:#1e88e5"></span>Blue</th><td><input class="in b" type="text" inputmode="decimal" autocomplete="off" aria-label="Blue blank lux"></td><td><input class="in e" type="text" inputmode="decimal" autocomplete="off" aria-label="Blue extract lux"></td><td class="out t">–</td><td class="out a">–</td></tr>
+        </tbody>
+      </table></div>
+      <p class="fb" id="verdict" role="status" aria-live="polite"></p>
+      <p class="hint">Readings near zero? The extract is too dark. Mix 1 mL extract with 4 mL ethanol and measure again. Readings jumping around? Shade the tube and keep the phone still.</p>
+      <label for="benchNote"><b>Your bench notes</b> <span class="hint">What did you actually see? Anything that surprised you?</span></label>
+      <input class="txt" id="benchNote" type="text" autocomplete="off">
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTIVITY 4 ============ -->
+<section class="station" id="act4" aria-labelledby="act4-h">
+  <div class="wrap">
+    <header class="st-head">
+      <span class="st-num" aria-hidden="true">4</span>
+      <div><p class="st-time">33–40 min · Activity 4</p><h2 id="act4-h">Analyze</h2></div>
+    </header>
+    <p class="st-goal">Compare your result with your prediction, explain why leaves look green and clean up.</p>
+
+    <div class="block">
+      <h3 class="sub"><span class="tag">4A</span>Prediction against result</h3>
+      <p class="fb" id="cmp" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="block">
+      <h3 class="sub"><span class="tag">4B</span>Which statements are good explanations?</h3>
+      <p class="sub-note">Tick every statement you think is a good explanation, then check.</p>
+      <div class="reasons" id="reasons"></div>
+      <div class="sim-ctl"><button class="btn primary" id="reasonCheck" type="button">Check my choices</button></div>
+      <p class="fb" id="reasonFb" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="block">
+      <h3 class="sub"><span class="tag">4C</span>In your own words</h3>
+      <label for="explain">Finish the sentence: <i>Leaves look green because …</i></label>
+      <textarea class="txt" id="explain" placeholder="Write 2–3 sentences"></textarea>
+    </div>
+
+    <div class="block">
+      <h3 class="sub"><span class="tag">4D</span>Clean up <span class="chip" id="cleanStatus">0 / 3 done</span></h3>
+      <div class="kit-wrap"><table class="kit"><tbody>
+        <tr><td><input type="checkbox" class="clean-cb" aria-label="Leaves in the bin"></td><th scope="row">Leaves and filter paper in the bin</th></tr>
+        <tr><td><input type="checkbox" class="clean-cb" aria-label="Extract disposed"></td><th scope="row">Extract and blank poured away as your school allows, with plenty of water</th></tr>
+        <tr><td><input type="checkbox" class="clean-cb" aria-label="Equipment washed"></td><th scope="row">Mortar, funnel and tubes washed, then hands washed</th></tr>
+      </tbody></table></div>
+    </div>
+
+    <div class="block">
+      <h3 class="sub"><span class="tag">4E</span>Team summary</h3>
+      <p class="sub-note">This fills in as you work. Copy it and paste it into your report or send it to your facilitator.</p>
+      <textarea class="summary" id="summary" readonly aria-label="Team summary text"></textarea>
+      <div class="sim-ctl"><button class="btn primary" id="copyBtn" type="button">Copy summary</button><span class="hint" id="copyFb" role="status" aria-live="polite"></span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap foot">
+  <p>The animations show the expected pattern: chlorophyll absorbs mostly red and blue light and lets green through. Your lux numbers will differ because phone sensors, torches and room light vary. Write down what you really see.</p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const NS = 'http://www.w3.org/2000/svg';
+const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const sleep = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
+const mix = (a, b, t) => 'rgb(' + a.map((v, i) => Math.round(lerp(v, b[i], t))).join(',') + ')';
+function tween(ms, fn, alive) {
+  return new Promise(res => {
+    if (reduce || ms <= 0) { fn(1); res(); return; }
+    const t0 = performance.now();
+    const step = now => {
+      if (alive && !alive()) { res(); return; }
+      const k = clamp((now - t0) / ms, 0, 1);
+      fn(ease(k));
+      if (k < 1) requestAnimationFrame(step); else res();
+    };
+    requestAnimationFrame(step);
+  });
+}
+function S(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function H(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+function parseNum(s) { s = String(s == null ? '' : s).trim().replace(',', '.'); const m = s.match(/^[-+]?(\d+\.?\d*|\.\d+)/); return m ? parseFloat(m[0]) : NaN; }
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4200); }
+
+/* ---------- stepper ---------- */
+function makeStepper(id, steps, scene) {
+  const root = $('#' + id), list = $('.steps', root), cap = $('.cap', root), ctl = $('.st-ctl', root);
+  let cur = 0, tok = 0, playing = false;
+  const items = steps.map((s, i) => {
+    const li = H('li', 'step');
+    li.innerHTML = '<button type="button"><span class="step-n">' + (i + 1) + '</span><span class="step-t"><b>' + s.t + '</b><small>' + s.d + '</small></span></button>';
+    $('button', li).addEventListener('click', () => { stop(); go(i); });
+    list.appendChild(li);
+    return li;
+  });
+  const bBack = H('button', 'btn', '◀ Back'), bNext = H('button', 'btn primary', 'Next step ▶'),
+        bRep = H('button', 'btn', '↻ Replay'), bAuto = H('button', 'btn ghost', '▶ Play all');
+  [bBack, bNext, bRep, bAuto].forEach(b => { b.type = 'button'; ctl.appendChild(b); });
+  function paint() {
+    items.forEach((li, i) => { li.classList.toggle('on', i === cur); $('button', li).setAttribute('aria-current', i === cur ? 'step' : 'false'); });
+    cap.textContent = steps[cur].c;
+    bBack.disabled = cur === 0; bNext.disabled = cur === steps.length - 1;
+  }
+  async function go(i, fast) {
+    cur = clamp(i, 0, steps.length - 1);
+    const my = ++tok;
+    paint();
+    await scene.enter(cur, () => my === tok, !!fast);
+  }
+  function stop() { if (playing) { playing = false; bAuto.textContent = '▶ Play all'; } }
+  bBack.onclick = () => { stop(); go(cur - 1); };
+  bNext.onclick = () => { stop(); go(cur + 1); };
+  bRep.onclick = () => { stop(); go(cur); };
+  bAuto.onclick = async () => {
+    if (playing) { stop(); return; }
+    playing = true; bAuto.textContent = '❚❚ Stop';
+    for (let i = 0; i < steps.length && playing; i++) { await go(i); if (!playing) break; await sleep(900); }
+    stop();
+  };
+  go(0, true);
+}
+
+/* ---------- Scene A: mortar ---------- */
+function sceneA(svg) {
+  svg.innerHTML = '';
+  const BOWL = 'M170 150 Q170 250 260 250 Q350 250 350 150 Z';
+  const cp = S('clipPath', { id: 'cpA' }, svg); S('path', { d: BOWL }, cp);
+  const LIGHT = [214, 236, 216], DARK = [27, 94, 32], LEVEL = 62;
+  const liq = S('rect', { x: 160, y: 250, width: 200, height: 0, 'clip-path': 'url(#cpA)' }, svg);
+  liq.style.fill = mix(LIGHT, LIGHT, 0);
+  const leaves = [0, 1, 2, 3, 4, 5].map(i => {
+    const fy = 236 - (i % 3) * 9, e = S('ellipse', { cx: 215 + i * 18, cy: -20, rx: 17, ry: 7, fill: i % 2 ? '#388e3c' : '#2e7d32', opacity: 0 }, svg);
+    return { e, fy };
+  });
+  S('path', { d: BOWL, class: 's-glass' }, svg);
+  const bottle = S('g', { opacity: 0 }, svg);
+  const bg = S('g', { transform: 'rotate(125 156 50)' }, bottle);
+  S('rect', { x: 136, y: 10, width: 40, height: 80, rx: 6, fill: 'var(--eth)', stroke: 'var(--glass)', 'stroke-width': 2 }, bg);
+  S('rect', { x: 148, y: -6, width: 16, height: 18, fill: 'var(--glass)' }, bg);
+  S('text', { x: 20, y: 40, class: 's-lbl b' }, bottle).textContent = '10 mL ethanol';
+  const stream = S('rect', { x: 199, y: 84, width: 3, height: 0, fill: 'var(--eth)', opacity: 0 }, svg);
+  const pestle = S('g', { opacity: 0 }, svg);
+  S('line', { x1: 260, y1: 240, x2: 335, y2: 62, 'stroke-width': 16, class: 's-rod' }, pestle);
+  const setLiq = h => { liq.setAttribute('y', (250 - h).toFixed(1)); liq.setAttribute('height', (h + 4).toFixed(1)); };
+  async function enter(i, alive, fast) {
+    const T = ms => fast ? 0 : ms;
+    stream.setAttribute('opacity', 0); pestle.setAttribute('opacity', 0); bottle.setAttribute('opacity', 0);
+    if (i === 0) {
+      setLiq(0); liq.style.fill = mix(LIGHT, LIGHT, 0);
+      leaves.forEach(l => { l.e.setAttribute('cy', -20); l.e.setAttribute('opacity', 0); l.e.style.opacity = 1; });
+      await tween(T(1700), k => leaves.forEach((l, j) => { const kk = clamp(k * 1.5 - j * .1, 0, 1); l.e.setAttribute('cy', lerp(-20, l.fy, kk).toFixed(1)); l.e.setAttribute('opacity', kk > 0 ? 1 : 0); }), alive);
+      return;
+    }
+    leaves.forEach(l => { l.e.setAttribute('cy', l.fy); l.e.setAttribute('opacity', 1); l.e.style.opacity = 1; });
+    if (i === 1) {
+      setLiq(0); liq.style.fill = mix(LIGHT, LIGHT, 0);
+      bottle.setAttribute('opacity', 1); stream.setAttribute('opacity', 1);
+      await tween(T(1900), k => { const h = LEVEL * k; setLiq(h); stream.setAttribute('height', Math.max(0, 250 - h - 84).toFixed(1)); }, alive);
+      if (!alive()) return;
+      stream.setAttribute('opacity', 0);
+      return;
+    }
+    setLiq(LEVEL); pestle.setAttribute('opacity', 1);
+    await tween(T(3400), k => {
+      const a = 13 * Math.sin(k * Math.PI * 12);
+      pestle.setAttribute('transform', 'rotate(' + a.toFixed(1) + ' 260 240)');
+      liq.style.fill = mix(LIGHT, DARK, k);
+      leaves.forEach(l => { l.e.style.opacity = (1 - .65 * k).toFixed(2); });
+    }, alive);
+  }
+  return { enter };
+}
+
+/* ---------- Scene B: filter ---------- */
+function sceneB(svg) {
+  svg.innerHTML = '';
+  const GREEN = '#43a047';
+  const xl = y => 190 + (y - 70) * .5 + 8, xr = y => 330 - (y - 70) * .5 - 8;
+  const cp = S('clipPath', { id: 'cpB' }, svg); S('path', { d: 'M203 236 L317 236 L307 304 L213 304 Z' }, cp);
+  const fun = S('g', null, svg);
+  const cupLiq = S('rect', { x: 200, y: 304, width: 120, height: 0, fill: GREEN, opacity: .85, 'clip-path': 'url(#cpB)' }, fun);
+  S('path', { d: 'M200 236 L320 236 L308 305 L212 305 Z', class: 's-glass' }, fun);
+  S('rect', { x: 252, y: 170, width: 16, height: 46, fill: 'var(--surface)', stroke: 'var(--glass)', 'stroke-width': 2 }, fun);
+  const paper = S('polygon', { points: '196,74 324,74 270,162 250,162', fill: '#f3ecd2', stroke: '#c9bd94', 'stroke-width': 2, opacity: 0 }, fun);
+  const fl = S('polygon', { fill: GREEN, opacity: 0 }, fun);
+  S('polygon', { points: '190,70 330,70 280,170 240,170', fill: 'none', class: 's-glass' }, fun);
+  const stream = S('rect', { x: 258, y: 14, width: 4, height: 0, fill: GREEN, opacity: 0 }, fun);
+  const drip = S('circle', { cx: 260, cy: 218, r: 4.5, fill: GREEN, opacity: 0 }, fun);
+  const tubes = S('g', { opacity: 0 }, svg);
+  const mkTube = (x, fill, op, name) => {
+    const id = 'cpT' + name, c = S('clipPath', { id }, tubes);
+    S('path', { d: 'M' + (x + 2) + ' 80 V240 a31 31 0 0 0 62 0 V80 Z' }, c);
+    S('rect', { x, y: 150, width: 66, height: 150, fill, opacity: op, 'clip-path': 'url(#' + id + ')' }, tubes);
+    S('path', { d: 'M' + x + ' 70 V240 a33 33 0 0 0 66 0 V70', class: 's-glass' }, tubes);
+    const t = S('g', null, tubes);
+    S('rect', { x: x - 14, y: 252, width: 94, height: 30, rx: 5, class: 's-tag' }, t);
+    S('text', { x: x + 33, y: 272, class: 's-tag-t' }, t).textContent = name;
+    S('text', { x: x + 33, y: 304, 'text-anchor': 'middle', class: 's-lbl' }, tubes).textContent = '5 mL';
+  };
+  mkTube(150, GREEN, .85, 'extract');
+  mkTube(304, '#b9ddf0', .45, 'blank');
+  const setFun = (yt) => {
+    if (yt == null) { fl.setAttribute('opacity', 0); return; }
+    fl.setAttribute('opacity', .85);
+    fl.setAttribute('points', [xl(yt), yt, xr(yt), yt, xr(150), 150, xl(150), 150].reduce((a, v, i) => a + (i % 2 ? ',' : ' ') + (typeof v === 'number' ? v.toFixed(1) : v), '').trim());
+  };
+  const setCup = h => { cupLiq.setAttribute('y', (304 - h).toFixed(1)); cupLiq.setAttribute('height', (h + 4).toFixed(1)); };
+  async function enter(i, alive, fast) {
+    const T = ms => fast ? 0 : ms;
+    stream.setAttribute('opacity', 0); drip.setAttribute('opacity', 0);
+    if (i === 3) {
+      fun.setAttribute('opacity', 0); tubes.setAttribute('opacity', 0);
+      await tween(T(700), k => tubes.setAttribute('opacity', k.toFixed(2)), alive);
+      return;
+    }
+    tubes.setAttribute('opacity', 0); fun.setAttribute('opacity', 1);
+    if (i === 0) {
+      setFun(null); setCup(0); paper.setAttribute('opacity', 0);
+      await tween(T(900), k => paper.setAttribute('opacity', k.toFixed(2)), alive);
+      return;
+    }
+    paper.setAttribute('opacity', 1);
+    if (i === 1) {
+      setFun(null); setCup(0);
+      stream.setAttribute('opacity', 1);
+      await tween(T(1900), k => { const yt = lerp(150, 92, k); setFun(yt); stream.setAttribute('height', Math.max(0, yt - 14).toFixed(1)); }, alive);
+      if (!alive()) return;
+      stream.setAttribute('opacity', 0);
+      return;
+    }
+    setFun(92); setCup(0);
+    drip.setAttribute('opacity', 1);
+    await tween(T(4200), k => {
+      setFun(lerp(92, 138, k)); setCup(lerp(0, 48, k));
+      const ph = (k * 9) % 1; drip.setAttribute('cy', lerp(218, 304 - 48 * k, ph).toFixed(1));
+    }, alive);
+    if (alive()) drip.setAttribute('opacity', 0);
+  }
+  return { enter };
+}
+
+/* ---------- Scene C: light ---------- */
+function sceneC(svg) {
+  svg.innerHTML = '';
+  const COLS = [{ n: 'Red', c: '#e53935', after: .12 }, { n: 'Green', c: '#43a047', after: .95 }, { n: 'Blue', c: '#1e88e5', after: .12 }];
+  S('rect', { x: 24, y: 128, width: 76, height: 44, rx: 8, fill: '#444' }, svg);
+  S('text', { x: 62, y: 118, 'text-anchor': 'middle', class: 's-lbl' }, svg).textContent = 'Light';
+  const b1 = S('polygon', { points: '100,140 214,126 214,174 100,160', fill: '#999', opacity: 0 }, svg);
+  const tube = S('rect', { x: 214, y: 84, width: 80, height: 150, rx: 14, stroke: 'var(--glass)', 'stroke-width': 3, fill: '#b9ddf0', opacity: .5 }, svg);
+  S('text', { x: 254, y: 74, 'text-anchor': 'middle', class: 's-lbl b' }, svg);
+  const tl = svg.lastChild;
+  const b2 = S('polygon', { points: '294,126 410,112 410,188 294,174', fill: '#999', opacity: 0 }, svg);
+  S('rect', { x: 410, y: 104, width: 30, height: 92, rx: 5, fill: '#90a4ae' }, svg);
+  S('text', { x: 425, y: 216, 'text-anchor': 'middle', class: 's-lbl' }, svg).textContent = 'Phone lux sensor';
+  const st = S('text', { x: 260, y: 290, 'text-anchor': 'middle', class: 's-lbl b' }, svg);
+  const setTube = ex => { tube.setAttribute('fill', ex ? '#43a047' : '#b9ddf0'); tube.setAttribute('opacity', ex ? .8 : .5); tl.textContent = ex ? 'extract' : 'blank'; };
+  async function enter(i, alive, fast) {
+    const T = ms => fast ? 0 : ms;
+    b1.setAttribute('opacity', 0); b2.setAttribute('opacity', 0); setTube(false);
+    if (i === 0) { st.textContent = 'Light, tube and sensor in a line, about 2 cm apart'; return; }
+    const ex = i === 2; setTube(ex);
+    st.textContent = '';
+    for (const c of COLS) {
+      if (!alive()) return;
+      b1.setAttribute('fill', c.c); b2.setAttribute('fill', c.c); b1.setAttribute('opacity', .95); b2.setAttribute('opacity', 0);
+      st.textContent = c.n + ' light…';
+      const target = ex ? c.after : .95;
+      await tween(T(700), k => b2.setAttribute('opacity', (target * k).toFixed(2)), alive);
+      if (!alive()) return;
+      st.textContent = c.n + ': ' + (!ex ? 'passes through (high lux)' : c.after > .5 ? 'mostly passes (high lux)' : 'mostly absorbed (low lux)');
+      await sleep(T(1100) ? 1100 : 0);
+    }
+  }
+  return { enter };
+}
+
+const stepsA = [
+  { t: 'Load the mortar.', d: 'Tear 5–6 spinach leaves (about 2 g) into small pieces. Put them in the mortar with a pinch of sand.', c: 'Spinach pieces and sand in the mortar. Small pieces and sand break open more cells.' },
+  { t: 'Add 10 mL of ethanol.', d: 'Measure 10 mL and pour it over the leaves. Cap the bottle again.', c: '10 mL of ethanol covers the leaf pieces. Chlorophyll dissolves in ethanol, not in water.' },
+  { t: 'Grind for 3–4 minutes.', d: 'Press and twist firmly until the liquid is deep green and the leaf pieces look pale.', c: 'The liquid darkens as chlorophyll leaves the cells and dissolves in the ethanol.' }
+];
+const stepsB = [
+  { t: 'Fold the filter into the funnel.', d: 'Fold a coffee filter into a cone and sit it in the funnel over a cup.', c: 'Filter cone in the funnel, funnel over the cup.' },
+  { t: 'Pour in the green liquid.', d: 'Rinse the mortar with a few drops of ethanol and pour that in too.', c: 'The green liquid goes through the filter. Leaf bits stay behind.' },
+  { t: 'Wait about 5 minutes.', d: 'Let it drip. Gently squeeze the filter if it is slow. Use the time to label two tubes.', c: 'Clear green extract collects in the cup. Keep it out of sun and away from heat.' },
+  { t: 'Fill two tubes.', d: 'Put 5 mL of the clear green extract in a tube labelled “extract”. Put 5 mL of plain ethanol in a tube labelled “blank”.', c: 'One tube of extract, one blank of plain ethanol.' }
+];
+const stepsC = [
+  { t: 'Set up in a dim corner.', d: 'Line up the light, the tube and the phone sensor about 2 cm apart. Open the lux-meter app.', c: 'Keep the distance the same for every reading.' },
+  { t: 'Measure the blank.', d: 'Shine red, then green, then blue through the blank tube. Write the lux for each colour in the table.', c: 'Through plain ethanol, all three colours get through.' },
+  { t: 'Measure the extract.', d: 'Swap in the extract tube without moving anything. Repeat all three colours. If readings are near zero, dilute 1 mL extract with 4 mL ethanol.', c: 'Through the extract, red and blue are mostly absorbed. Green passes.' }
+];
+
+/* ---------- results table ---------- */
+const res = { best: null, worst: null, data: {} };
+function calc() {
+  const out = {}; res.data = {};
+  $$('#results tbody tr').forEach(r => {
+    const b = parseNum($('.b', r).value), e = parseNum($('.e', r).value), t = $('.t', r), a = $('.a', r);
+    if (b > 0 && e >= 0) { const p = e / b * 100; t.textContent = p.toFixed(1) + '%'; a.textContent = (100 - p).toFixed(1) + '%'; out[r.dataset.c] = p; res.data[r.dataset.c] = { b, e, p }; }
+    else { t.textContent = '–'; a.textContent = '–'; }
+  });
+  const keys = Object.keys(out), v = $('#verdict');
+  if (keys.length === 3) {
+    res.best = keys.reduce((x, y) => out[x] > out[y] ? x : y);
+    res.worst = keys.reduce((x, y) => out[x] < out[y] ? x : y);
+    v.className = 'fb ok'; v.innerHTML = '<b>' + res.best + '</b> light passed through best. <b>' + res.worst + '</b> light was absorbed most.';
+  } else { res.best = res.worst = null; v.className = 'fb'; v.textContent = ''; }
+  compare();
+}
+function compare() {
+  const f = $('#cmp'), p = $('#pred').value;
+  if (!res.best) { f.className = 'fb warn'; f.textContent = 'Enter all six readings in Activity 3 to compare.'; return; }
+  if (!p) { f.className = 'fb warn'; f.textContent = 'You did not make a prediction in Activity 1. Your result: ' + res.best + ' light passed through best.'; return; }
+  const ok = p === res.best;
+  f.className = 'fb ' + (ok ? 'ok' : 'warn');
+  f.innerHTML = ok ? '<b>Your prediction matched.</b> ' + res.best + ' light passed through best.' : '<b>Your prediction differed.</b> You predicted ' + p + ', and ' + res.best + ' passed through best. What do you think explains it?';
+}
+
+/* ---------- reasons ---------- */
+const REASONS = [
+  { t: 'Chlorophyll absorbs mostly red and blue light.', good: true, why: 'These are the colours it uses for photosynthesis.' },
+  { t: 'Green light is mostly reflected or passed through, so our eyes see green.', good: true, why: 'Your green reading was the highest in the extract.' },
+  { t: 'The blank lets all three colours through, so the difference comes from the chlorophyll.', good: true, why: 'That is exactly why the blank is measured.' },
+  { t: 'Leaves make their own green light.', good: false, why: 'Leaves only reflect or transmit light that arrives from the Sun or a lamp.' },
+  { t: 'Chlorophyll absorbs green light most strongly.', good: false, why: 'It is the opposite: green is absorbed least.' },
+  { t: 'Water would pull chlorophyll out of the leaf as well as ethanol does.', good: false, why: 'Chlorophyll does not dissolve well in water, which is why ethanol was used.' }
+];
+const rs = { score: null };
+function buildReasons() {
+  const box = $('#reasons'), fb = $('#reasonFb');
+  REASONS.forEach((r, i) => { const l = H('label', 'reason'); l.innerHTML = '<input type="checkbox" id="rs-' + i + '"><span>' + r.t + '<small></small></span>'; box.appendChild(l); });
+  $('#reasonCheck').addEventListener('click', () => {
+    let score = 0;
+    $$('.reason', box).forEach((l, i) => {
+      const r = REASONS[i], on = $('input', l).checked, ok = on === r.good;
+      if (ok) score++;
+      l.classList.toggle('right', ok); l.classList.toggle('wrong', !ok);
+      $('small', l).textContent = (ok ? '✓ ' : '✗ ') + (r.good && !on ? 'A good explanation you missed. ' : !r.good && on ? 'Not a good explanation. ' : '') + r.why;
+    });
+    rs.score = score;
+    fb.className = 'fb ' + (score === REASONS.length ? 'ok' : 'warn');
+    fb.innerHTML = '<b>' + score + ' of ' + REASONS.length + ' judged correctly.</b> ' + (score === REASONS.length ? 'You can explain why leaves are green.' : 'Change the ones marked ✗ and check again.');
+  });
+}
+
+/* ---------- summary ---------- */
+function summaryText() {
+  const team = ($('#team').value || '').trim(), pred = $('#pred').value;
+  const row = c => res.data[c] ? c + ': blank ' + res.data[c].b + ' lux, extract ' + res.data[c].e + ' lux, ' + res.data[c].p.toFixed(1) + '% transmitted' : c + ': —';
+  return [
+    'SCIENCE CLUB PROTOCOL: TEAM SUMMARY', 'Team: ' + (team || '—'), '',
+    'ACTIVITY 1: PREDICTION', 'Predicted best-transmitted colour: ' + (pred || '—'), '',
+    'ACTIVITY 3: LIGHT TEST', row('Red'), row('Green'), row('Blue'),
+    'Best transmitted: ' + (res.best || '—') + '    Most absorbed: ' + (res.worst || '—'),
+    'Bench notes: ' + (($('#benchNote').value || '').trim() || '—'), '',
+    'ACTIVITY 4: ANALYZE',
+    'Explanations judged correctly: ' + (rs.score == null ? '—' : rs.score + ' of ' + REASONS.length),
+    'Leaves look green because: ' + (($('#explain').value || '').trim() || '—')
+  ].join('\n');
+}
+let sT;
+const sched = () => { clearTimeout(sT); sT = setTimeout(() => { $('#summary').value = summaryText(); }, 150); };
+
+/* ---------- clock, safety, kit ---------- */
+const clock = { base: 0, start: 0, running: false, timer: null, last: -2 };
+const SEG = [0, 10, 18, 33, 40];
+const MSG = ['Activity 1: prepare and grind', 'Activity 2: filter the extract', 'Activity 3: light absorbance test', 'Activity 4: analyze'];
+const elapsed = () => clock.base + (clock.running ? (Date.now() - clock.start) / 1000 : 0);
+function drawClock() {
+  const e = clamp(elapsed(), 0, 2400), m = Math.floor(e / 60), s = Math.floor(e % 60);
+  $('#clk').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  $('#prog').style.width = (e / 2400 * 100) + '%';
+  let idx = -1; for (let i = 0; i < 4; i++) if (e >= SEG[i] && e < SEG[i + 1]) idx = i;
+  $$('.seg').forEach((sg, i) => sg.classList.toggle('now', (clock.running || e > 0) && i === idx));
+  if (idx !== clock.last) { if (clock.running) toast(idx === -1 ? 'Time is up. Finish your summary.' : MSG[idx]); clock.last = idx; }
+  if (e >= 2400 && clock.running) stopClock();
+}
+function stopClock() {
+  if (clock.running) { clock.base = elapsed(); clock.running = false; }
+  clearInterval(clock.timer); $('#clkBtn').textContent = clock.base > 0 ? 'Resume' : 'Start'; drawClock();
+}
+function counter(cbSel, chipSel, total, label, onDone) {
+  const cbs = $$(cbSel), chip = $(chipSel);
+  const upd = () => { const n = cbs.filter(c => c.checked).length; chip.textContent = n + ' / ' + total + ' ' + label; chip.className = 'chip' + (n === total ? ' ok' : ''); if (onDone) onDone(n === total); };
+  cbs.forEach(c => c.addEventListener('change', upd)); upd();
+}
+
+/* ---------- start ---------- */
+function init() {
+  makeStepper('stepA', stepsA, sceneA($('#svgA')));
+  makeStepper('stepB', stepsB, sceneB($('#svgB')));
+  makeStepper('stepC', stepsC, sceneC($('#svgC')));
+  buildReasons();
+  $$('#results input').forEach(i => i.addEventListener('input', calc));
+  $('#pred').addEventListener('change', compare);
+  compare();
+  counter('.safe-cb', '#safeStatus', 4, 'confirmed', ok => { const b = $('#clkBtn'); b.disabled = !ok; b.title = ok ? 'Start the 40-minute clock' : 'Tick all four safety boxes to start the clock'; });
+  counter('.kit-cb', '#kitStatus', 5, 'collected');
+  counter('.clean-cb', '#cleanStatus', 3, 'done');
+  $('#clkBtn').addEventListener('click', () => {
+    if (clock.running) { stopClock(); return; }
+    if (clock.base >= 2400) return;
+    clock.running = true; clock.start = Date.now(); clock.last = -2; $('#clkBtn').textContent = 'Pause';
+    clock.timer = setInterval(drawClock, 250); drawClock();
+  });
+  $('#clkReset').addEventListener('click', () => { clock.running = false; clearInterval(clock.timer); clock.base = 0; clock.last = -2; $('#clkBtn').textContent = 'Start'; drawClock(); });
+  drawClock();
+  if ('IntersectionObserver' in window) {
+    const ids = ['act1', 'act2', 'act3', 'act4'], segs = $$('.seg');
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const i = ids.indexOf(e.target.id); segs.forEach((s, j) => s.classList.toggle('on', j === i)); } }), { rootMargin: '-30% 0px -60% 0px' });
+    ids.forEach(id => io.observe($('#' + id)));
+  }
+  $('#copyBtn').addEventListener('click', async () => {
+    const ta = $('#summary'), fb = $('#copyFb'); ta.value = summaryText();
+    try { await navigator.clipboard.writeText(ta.value); fb.textContent = 'Copied.'; }
+    catch (e) { ta.focus(); ta.select(); fb.textContent = 'Text selected. Press Ctrl+C (or ⌘+C) to copy.'; }
+  });
+  document.addEventListener('input', sched); document.addEventListener('change', sched); document.addEventListener('click', sched);
+  sched();
+}
+init();
+})();
+</script>
+</body>
+</html>
